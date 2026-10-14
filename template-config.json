@@ -1,0 +1,1792 @@
+{
+  "buckets": {
+    "3c66d6d9-b97f-58bf-a38f-2119c66c6b9e": {
+      "name": "uploads"
+    }
+  },
+  "services": {
+    "2d46bc46-50bc-51f6-9f84-e7ca30b4c50a": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Frontend",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-ai-frontend-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {
+          "<hasDomain>": {}
+        }
+      },
+      "volumeMounts": {},
+      "variables": {
+        "PORT": {
+          "defaultValue": "80",
+          "description": "nginx port - leave as is",
+          "isOptional": false
+        },
+        "VITE_APP_ENV": {
+          "defaultValue": "production",
+          "description": "Production CSP",
+          "isOptional": false
+        },
+        "VITE_API_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL (Gateway)",
+          "isOptional": false
+        },
+        "VITE_AUTH_API_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL (Gateway)",
+          "isOptional": false
+        },
+        "VITE_WS_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL (Gateway)",
+          "isOptional": false
+        },
+        "VITE_EVOAI_API_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL (Gateway)",
+          "isOptional": false
+        },
+        "VITE_AGENT_PROCESSOR_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL (Gateway)",
+          "isOptional": false
+        },
+        "VITE_EVOFLOW_API_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}/evoflow",
+          "description": "EvoFlow through the Gateway (Campaigns)",
+          "isOptional": false
+        }
+      }
+    },
+    "1be036f4-69ba-5efa-85ea-b8a4f9d3faba": {
+      "icon": "https://devicons.railway.app/i/nginx.svg",
+      "name": "Gateway",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/evo-crm-railway",
+        "rootDirectory": "/gateway"
+      },
+      "networking": {
+        "serviceDomains": {
+          "<hasDomain>": {}
+        }
+      },
+      "volumeMounts": {},
+      "variables": {
+        "PORT": {
+          "defaultValue": "3030",
+          "description": "nginx port - leave as is",
+          "isOptional": false
+        },
+        "AUTH_UPSTREAM": {
+          "defaultValue": "${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001",
+          "description": "Auth upstream",
+          "isOptional": false
+        },
+        "CRM_UPSTREAM": {
+          "defaultValue": "${{CRM.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "CRM upstream",
+          "isOptional": false
+        },
+        "CORE_UPSTREAM": {
+          "defaultValue": "${{Core.RAILWAY_PRIVATE_DOMAIN}}:5555",
+          "description": "Core upstream",
+          "isOptional": false
+        },
+        "PROCESSOR_UPSTREAM": {
+          "defaultValue": "${{Processor.RAILWAY_PRIVATE_DOMAIN}}:8000",
+          "description": "Processor upstream",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_UPSTREAM": {
+          "defaultValue": "${{Bot-Runtime.RAILWAY_PRIVATE_DOMAIN}}:8080",
+          "description": "Bot runtime upstream",
+          "isOptional": false
+        },
+        "EVOFLOW_UPSTREAM": {
+          "defaultValue": "${{EvoFlow.RAILWAY_PRIVATE_DOMAIN}}:3334",
+          "description": "EvoFlow upstream",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "900",
+          "description": "First boot runs database migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "a87b8b74-c304-541d-b2f5-051d393c736f": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Auth",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-auth-service-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "RAILS_ENV": {
+          "defaultValue": "production",
+          "description": "Rails environment",
+          "isOptional": false
+        },
+        "PORT": {
+          "defaultValue": "3001",
+          "description": "Port the Auth service listens on - leave as is",
+          "isOptional": false
+        },
+        "RAILS_MAX_THREADS": {
+          "defaultValue": "5",
+          "description": "Puma threads",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{secret(128, \"0123456789abcdef\")}}",
+          "description": "Rails secret shared by Auth, CRM, Core and Processor. Changing it logs everyone out",
+          "isOptional": false
+        },
+        "JWT_SECRET_KEY": {
+          "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+          "description": "Signs the JWTs every service verifies",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+          "description": "Internal service-to-service token",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_SECRET_KEY": {
+          "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+          "description": "Signs OAuth access tokens",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_ALGORITHM": {
+          "defaultValue": "hs256",
+          "description": "OAuth token algorithm",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_ISS": {
+          "defaultValue": "evo-auth-service",
+          "description": "OAuth token issuer",
+          "isOptional": false
+        },
+        "OAUTH_TOKEN_EXPIRES_IN": {
+          "defaultValue": "28800",
+          "description": "Session token lifetime in seconds (8 h)",
+          "isOptional": false
+        },
+        "MFA_ISSUER": {
+          "defaultValue": "EvoCRM",
+          "description": "Name shown in authenticator apps",
+          "isOptional": false
+        },
+        "SIDEKIQ_CONCURRENCY": {
+          "defaultValue": "10",
+          "description": "Background job threads",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "POSTGRES_USERNAME": {
+          "defaultValue": "${{Postgres.POSTGRES_USER}}",
+          "description": "Postgres user",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "POSTGRES_DATABASE": {
+          "defaultValue": "${{Postgres.POSTGRES_DB}}",
+          "description": "Shared Evo CRM database",
+          "isOptional": false
+        },
+        "POSTGRES_SSLMODE": {
+          "defaultValue": "disable",
+          "description": "Plain connection - traffic stays on Railway's private network",
+          "isOptional": false
+        },
+        "FRONTEND_URL": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the Evo CRM app (the Frontend service)",
+          "isOptional": false
+        },
+        "BACKEND_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the API (the Gateway service)",
+          "isOptional": false
+        },
+        "CORS_ORIGINS": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}},https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Origins allowed to call the API",
+          "isOptional": false
+        },
+        "ACTIVE_STORAGE_SERVICE": {
+          "defaultValue": "s3_compatible",
+          "description": "Uploads and chat media go to the Railway bucket",
+          "isOptional": false
+        },
+        "STORAGE_BUCKET_NAME": {
+          "defaultValue": "${{uploads.BUCKET}}",
+          "description": "Railway bucket name",
+          "isOptional": false
+        },
+        "STORAGE_ACCESS_KEY_ID": {
+          "defaultValue": "${{uploads.ACCESS_KEY_ID}}",
+          "description": "Railway bucket access key",
+          "isOptional": false
+        },
+        "STORAGE_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{uploads.SECRET_ACCESS_KEY}}",
+          "description": "Railway bucket secret key",
+          "isOptional": false
+        },
+        "STORAGE_REGION": {
+          "defaultValue": "${{uploads.REGION}}",
+          "description": "Railway bucket region",
+          "isOptional": false
+        },
+        "STORAGE_ENDPOINT": {
+          "defaultValue": "${{uploads.ENDPOINT}}",
+          "description": "Railway bucket S3 endpoint",
+          "isOptional": false
+        },
+        "SMTP_ADDRESS": {
+          "defaultValue": "",
+          "description": "Optional SMTP host (e.g. smtp.resend.com) for password resets and notifications. Railway blocks outbound SMTP on Free/Trial/Hobby",
+          "isOptional": true
+        },
+        "SMTP_PORT": {
+          "defaultValue": "",
+          "description": "Optional SMTP port, e.g. 587",
+          "isOptional": true
+        },
+        "SMTP_USERNAME": {
+          "defaultValue": "",
+          "description": "Optional SMTP username",
+          "isOptional": true
+        },
+        "SMTP_PASSWORD": {
+          "defaultValue": "",
+          "description": "Optional SMTP password",
+          "isOptional": true
+        },
+        "SMTP_DOMAIN": {
+          "defaultValue": "",
+          "description": "Optional SMTP HELO domain, e.g. yourdomain.com",
+          "isOptional": true
+        },
+        "MAILER_SENDER_EMAIL": {
+          "defaultValue": "",
+          "description": "Optional From address, e.g. Evo CRM <crm@yourdomain.com>",
+          "isOptional": true
+        },
+        "SMTP_AUTHENTICATION": {
+          "defaultValue": "plain",
+          "description": "SMTP auth method",
+          "isOptional": false
+        },
+        "SMTP_ENABLE_STARTTLS_AUTO": {
+          "defaultValue": "true",
+          "description": "Use STARTTLS",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "600",
+          "description": "First boot runs database migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "4cd5c529-a661-533f-b925-ea8a5d65e22b": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Auth-Worker",
+      "build": {},
+      "deploy": {
+        "startCommand": "bundle exec sidekiq -C config/sidekiq.yml",
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-auth-service-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "RAILS_ENV": {
+          "defaultValue": "production",
+          "description": "Rails environment",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{Auth.SECRET_KEY_BASE}}",
+          "description": "SECRET_KEY_BASE from the Auth service",
+          "isOptional": false
+        },
+        "JWT_SECRET_KEY": {
+          "defaultValue": "${{Auth.JWT_SECRET_KEY}}",
+          "description": "JWT_SECRET_KEY from the Auth service",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{Auth.EVOAI_CRM_API_TOKEN}}",
+          "description": "EVOAI_CRM_API_TOKEN from the Auth service",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_SECRET_KEY": {
+          "defaultValue": "${{Auth.DOORKEEPER_JWT_SECRET_KEY}}",
+          "description": "DOORKEEPER_JWT_SECRET_KEY from the Auth service",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_ALGORITHM": {
+          "defaultValue": "hs256",
+          "description": "OAuth token algorithm",
+          "isOptional": false
+        },
+        "DOORKEEPER_JWT_ISS": {
+          "defaultValue": "evo-auth-service",
+          "description": "OAuth token issuer",
+          "isOptional": false
+        },
+        "OAUTH_TOKEN_EXPIRES_IN": {
+          "defaultValue": "28800",
+          "description": "Session token lifetime in seconds (8 h)",
+          "isOptional": false
+        },
+        "MFA_ISSUER": {
+          "defaultValue": "EvoCRM",
+          "description": "Name shown in authenticator apps",
+          "isOptional": false
+        },
+        "SIDEKIQ_CONCURRENCY": {
+          "defaultValue": "10",
+          "description": "Background job threads",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "POSTGRES_USERNAME": {
+          "defaultValue": "${{Postgres.POSTGRES_USER}}",
+          "description": "Postgres user",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "POSTGRES_DATABASE": {
+          "defaultValue": "${{Postgres.POSTGRES_DB}}",
+          "description": "Shared Evo CRM database",
+          "isOptional": false
+        },
+        "POSTGRES_SSLMODE": {
+          "defaultValue": "disable",
+          "description": "Plain connection - traffic stays on Railway's private network",
+          "isOptional": false
+        },
+        "FRONTEND_URL": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the Evo CRM app (the Frontend service)",
+          "isOptional": false
+        },
+        "BACKEND_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the API (the Gateway service)",
+          "isOptional": false
+        },
+        "CORS_ORIGINS": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}},https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Origins allowed to call the API",
+          "isOptional": false
+        },
+        "ACTIVE_STORAGE_SERVICE": {
+          "defaultValue": "s3_compatible",
+          "description": "Uploads and chat media go to the Railway bucket",
+          "isOptional": false
+        },
+        "STORAGE_BUCKET_NAME": {
+          "defaultValue": "${{uploads.BUCKET}}",
+          "description": "Railway bucket name",
+          "isOptional": false
+        },
+        "STORAGE_ACCESS_KEY_ID": {
+          "defaultValue": "${{uploads.ACCESS_KEY_ID}}",
+          "description": "Railway bucket access key",
+          "isOptional": false
+        },
+        "STORAGE_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{uploads.SECRET_ACCESS_KEY}}",
+          "description": "Railway bucket secret key",
+          "isOptional": false
+        },
+        "STORAGE_REGION": {
+          "defaultValue": "${{uploads.REGION}}",
+          "description": "Railway bucket region",
+          "isOptional": false
+        },
+        "STORAGE_ENDPOINT": {
+          "defaultValue": "${{uploads.ENDPOINT}}",
+          "description": "Railway bucket S3 endpoint",
+          "isOptional": false
+        },
+        "SMTP_ADDRESS": {
+          "defaultValue": "${{Auth.SMTP_ADDRESS}}",
+          "description": "SMTP_ADDRESS from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_PORT": {
+          "defaultValue": "${{Auth.SMTP_PORT}}",
+          "description": "SMTP_PORT from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_USERNAME": {
+          "defaultValue": "${{Auth.SMTP_USERNAME}}",
+          "description": "SMTP_USERNAME from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_PASSWORD": {
+          "defaultValue": "${{Auth.SMTP_PASSWORD}}",
+          "description": "SMTP_PASSWORD from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_DOMAIN": {
+          "defaultValue": "${{Auth.SMTP_DOMAIN}}",
+          "description": "SMTP_DOMAIN from the Auth service",
+          "isOptional": false
+        },
+        "MAILER_SENDER_EMAIL": {
+          "defaultValue": "${{Auth.MAILER_SENDER_EMAIL}}",
+          "description": "MAILER_SENDER_EMAIL from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_AUTHENTICATION": {
+          "defaultValue": "plain",
+          "description": "SMTP auth method",
+          "isOptional": false
+        },
+        "SMTP_ENABLE_STARTTLS_AUTO": {
+          "defaultValue": "true",
+          "description": "Use STARTTLS",
+          "isOptional": false
+        },
+        "RUN_MIGRATIONS": {
+          "defaultValue": "false",
+          "description": "The Auth service runs the migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "d78dfb3d-5dd3-5430-8bab-11d875a1dcd6": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "CRM",
+      "build": {},
+      "deploy": {
+        "startCommand": "/bin/sh -c \"until wget -q -O /dev/null $AUTH_HEALTH_URL; do echo Waiting for Auth migrations; sleep 5; done && exec docker/entrypoints/rails.sh bundle exec rails server -b 0.0.0.0 -p 3000\"",
+        "healthcheckPath": "/health/live",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-ai-crm-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "RAILS_ENV": {
+          "defaultValue": "production",
+          "description": "Rails environment",
+          "isOptional": false
+        },
+        "RAILS_SERVE_STATIC_FILES": {
+          "defaultValue": "true",
+          "description": "Serve compiled assets from Rails",
+          "isOptional": false
+        },
+        "RAILS_LOG_TO_STDOUT": {
+          "defaultValue": "true",
+          "description": "Logs to Railway",
+          "isOptional": false
+        },
+        "PORT": {
+          "defaultValue": "3000",
+          "description": "Port the CRM listens on - leave as is",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{Auth.SECRET_KEY_BASE}}",
+          "description": "SECRET_KEY_BASE from the Auth service",
+          "isOptional": false
+        },
+        "JWT_SECRET_KEY": {
+          "defaultValue": "${{Auth.JWT_SECRET_KEY}}",
+          "description": "JWT_SECRET_KEY from the Auth service",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{Auth.EVOAI_CRM_API_TOKEN}}",
+          "description": "EVOAI_CRM_API_TOKEN from the Auth service",
+          "isOptional": false
+        },
+        "EVO_AI_ENCRYPTION_KEY": {
+          "defaultValue": "${{Core.ENCRYPTION_KEY}}",
+          "description": "Fernet key that encrypts AI provider credentials (from Core)",
+          "isOptional": false
+        },
+        "POSTGRES_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "POSTGRES_USERNAME": {
+          "defaultValue": "${{Postgres.POSTGRES_USER}}",
+          "description": "Postgres user",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "POSTGRES_DATABASE": {
+          "defaultValue": "${{Postgres.POSTGRES_DB}}",
+          "description": "Shared Evo CRM database",
+          "isOptional": false
+        },
+        "POSTGRES_SSLMODE": {
+          "defaultValue": "disable",
+          "description": "Plain connection - traffic stays on Railway's private network",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "EVO_AUTH_SERVICE_URL": {
+          "defaultValue": "http://${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001",
+          "description": "Auth service on the private network",
+          "isOptional": false
+        },
+        "EVO_AI_CORE_SERVICE_URL": {
+          "defaultValue": "http://${{Core.RAILWAY_PRIVATE_DOMAIN}}:5555",
+          "description": "Core service on the private network",
+          "isOptional": false
+        },
+        "EVO_FLOW_ENABLED": {
+          "defaultValue": "true",
+          "description": "Segments, journeys and campaigns (EvoFlow)",
+          "isOptional": false
+        },
+        "EVO_FLOW_API_URL": {
+          "defaultValue": "http://${{EvoFlow.RAILWAY_PRIVATE_DOMAIN}}:3334/api/v1",
+          "description": "EvoFlow on the private network",
+          "isOptional": false
+        },
+        "AUTH_APIKEY_INTEGRATION_LOCAL": {
+          "defaultValue": "${{EvoFlow.AUTH_APIKEY_INTEGRATION_LOCAL}}",
+          "description": "Shared key between CRM and EvoFlow",
+          "isOptional": false
+        },
+        "EVO_FLOW_ALLOW_INSECURE": {
+          "defaultValue": "true",
+          "description": "Plain http to EvoFlow - private network only",
+          "isOptional": false
+        },
+        "FRONTEND_URL": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the Evo CRM app (the Frontend service)",
+          "isOptional": false
+        },
+        "BACKEND_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the API (the Gateway service)",
+          "isOptional": false
+        },
+        "CORS_ORIGINS": {
+          "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}},https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Origins allowed to call the API",
+          "isOptional": false
+        },
+        "DISABLE_TELEMETRY": {
+          "defaultValue": "true",
+          "description": "No usage telemetry",
+          "isOptional": false
+        },
+        "LOG_LEVEL": {
+          "defaultValue": "info",
+          "description": "Log level",
+          "isOptional": false
+        },
+        "ENABLE_ACCOUNT_SIGNUP": {
+          "defaultValue": "false",
+          "description": "Single-tenant install: users are added by the admin",
+          "isOptional": false
+        },
+        "ENABLE_PUSH_RELAY_SERVER": {
+          "defaultValue": "true",
+          "description": "Mobile push notifications through Evolution's relay",
+          "isOptional": false
+        },
+        "ENABLE_INBOX_EVENTS": {
+          "defaultValue": "true",
+          "description": "Inbox event stream",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_URL": {
+          "defaultValue": "http://${{Bot-Runtime.RAILWAY_PRIVATE_DOMAIN}}:8080",
+          "description": "Bot runtime on the private network",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_SECRET": {
+          "defaultValue": "${{Bot-Runtime.BOT_RUNTIME_SECRET}}",
+          "description": "Shared secret with the bot runtime",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_POSTBACK_BASE_URL": {
+          "defaultValue": "http://${{RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "Where the bot runtime posts replies back",
+          "isOptional": false
+        },
+        "EVOLUTION_API_URL": {
+          "defaultValue": "http://${{Evolution-API.RAILWAY_PRIVATE_DOMAIN}}:8080",
+          "description": "Bundled Evolution API (WhatsApp) - pre-filled for new WhatsApp inboxes",
+          "isOptional": false
+        },
+        "EVOLUTION_ADMIN_SECRET": {
+          "defaultValue": "${{Evolution-API.AUTHENTICATION_API_KEY}}",
+          "description": "Evolution API global key",
+          "isOptional": false
+        },
+        "AUTH_HEALTH_URL": {
+          "defaultValue": "http://${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001/health",
+          "description": "The CRM waits for Auth's migrations before its own",
+          "isOptional": false
+        },
+        "ACTIVE_STORAGE_SERVICE": {
+          "defaultValue": "s3_compatible",
+          "description": "Uploads and chat media go to the Railway bucket",
+          "isOptional": false
+        },
+        "STORAGE_BUCKET_NAME": {
+          "defaultValue": "${{uploads.BUCKET}}",
+          "description": "Railway bucket name",
+          "isOptional": false
+        },
+        "STORAGE_ACCESS_KEY_ID": {
+          "defaultValue": "${{uploads.ACCESS_KEY_ID}}",
+          "description": "Railway bucket access key",
+          "isOptional": false
+        },
+        "STORAGE_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{uploads.SECRET_ACCESS_KEY}}",
+          "description": "Railway bucket secret key",
+          "isOptional": false
+        },
+        "STORAGE_REGION": {
+          "defaultValue": "${{uploads.REGION}}",
+          "description": "Railway bucket region",
+          "isOptional": false
+        },
+        "STORAGE_ENDPOINT": {
+          "defaultValue": "${{uploads.ENDPOINT}}",
+          "description": "Railway bucket S3 endpoint",
+          "isOptional": false
+        },
+        "SMTP_ADDRESS": {
+          "defaultValue": "${{Auth.SMTP_ADDRESS}}",
+          "description": "SMTP_ADDRESS from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_PORT": {
+          "defaultValue": "${{Auth.SMTP_PORT}}",
+          "description": "SMTP_PORT from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_USERNAME": {
+          "defaultValue": "${{Auth.SMTP_USERNAME}}",
+          "description": "SMTP_USERNAME from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_PASSWORD": {
+          "defaultValue": "${{Auth.SMTP_PASSWORD}}",
+          "description": "SMTP_PASSWORD from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_DOMAIN": {
+          "defaultValue": "${{Auth.SMTP_DOMAIN}}",
+          "description": "SMTP_DOMAIN from the Auth service",
+          "isOptional": false
+        },
+        "MAILER_SENDER_EMAIL": {
+          "defaultValue": "${{Auth.MAILER_SENDER_EMAIL}}",
+          "description": "MAILER_SENDER_EMAIL from the Auth service",
+          "isOptional": false
+        },
+        "SMTP_AUTHENTICATION": {
+          "defaultValue": "plain",
+          "description": "SMTP auth method",
+          "isOptional": false
+        },
+        "SMTP_ENABLE_STARTTLS_AUTO": {
+          "defaultValue": "true",
+          "description": "Use STARTTLS",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "900",
+          "description": "First boot runs database migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "7b832393-3347-5511-b854-8fa88744e09a": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "CRM-Worker",
+      "build": {},
+      "deploy": {
+        "startCommand": "docker/entrypoints/rails.sh bundle exec sidekiq -C config/sidekiq.yml",
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-ai-crm-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "RAILS_ENV": {
+          "defaultValue": "${{CRM.RAILS_ENV}}",
+          "description": "RAILS_ENV from the CRM service",
+          "isOptional": false
+        },
+        "RAILS_LOG_TO_STDOUT": {
+          "defaultValue": "${{CRM.RAILS_LOG_TO_STDOUT}}",
+          "description": "RAILS_LOG_TO_STDOUT from the CRM service",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{CRM.SECRET_KEY_BASE}}",
+          "description": "SECRET_KEY_BASE from the CRM service",
+          "isOptional": false
+        },
+        "JWT_SECRET_KEY": {
+          "defaultValue": "${{CRM.JWT_SECRET_KEY}}",
+          "description": "JWT_SECRET_KEY from the CRM service",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{CRM.EVOAI_CRM_API_TOKEN}}",
+          "description": "EVOAI_CRM_API_TOKEN from the CRM service",
+          "isOptional": false
+        },
+        "EVO_AI_ENCRYPTION_KEY": {
+          "defaultValue": "${{CRM.EVO_AI_ENCRYPTION_KEY}}",
+          "description": "EVO_AI_ENCRYPTION_KEY from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_HOST": {
+          "defaultValue": "${{CRM.POSTGRES_HOST}}",
+          "description": "POSTGRES_HOST from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_PORT": {
+          "defaultValue": "${{CRM.POSTGRES_PORT}}",
+          "description": "POSTGRES_PORT from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_USERNAME": {
+          "defaultValue": "${{CRM.POSTGRES_USERNAME}}",
+          "description": "POSTGRES_USERNAME from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{CRM.POSTGRES_PASSWORD}}",
+          "description": "POSTGRES_PASSWORD from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_DATABASE": {
+          "defaultValue": "${{CRM.POSTGRES_DATABASE}}",
+          "description": "POSTGRES_DATABASE from the CRM service",
+          "isOptional": false
+        },
+        "POSTGRES_SSLMODE": {
+          "defaultValue": "${{CRM.POSTGRES_SSLMODE}}",
+          "description": "POSTGRES_SSLMODE from the CRM service",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "${{CRM.REDIS_URL}}",
+          "description": "REDIS_URL from the CRM service",
+          "isOptional": false
+        },
+        "EVO_AUTH_SERVICE_URL": {
+          "defaultValue": "${{CRM.EVO_AUTH_SERVICE_URL}}",
+          "description": "EVO_AUTH_SERVICE_URL from the CRM service",
+          "isOptional": false
+        },
+        "EVO_AI_CORE_SERVICE_URL": {
+          "defaultValue": "${{CRM.EVO_AI_CORE_SERVICE_URL}}",
+          "description": "EVO_AI_CORE_SERVICE_URL from the CRM service",
+          "isOptional": false
+        },
+        "EVO_FLOW_ENABLED": {
+          "defaultValue": "${{CRM.EVO_FLOW_ENABLED}}",
+          "description": "EVO_FLOW_ENABLED from the CRM service",
+          "isOptional": false
+        },
+        "EVO_FLOW_API_URL": {
+          "defaultValue": "${{CRM.EVO_FLOW_API_URL}}",
+          "description": "EVO_FLOW_API_URL from the CRM service",
+          "isOptional": false
+        },
+        "AUTH_APIKEY_INTEGRATION_LOCAL": {
+          "defaultValue": "${{CRM.AUTH_APIKEY_INTEGRATION_LOCAL}}",
+          "description": "AUTH_APIKEY_INTEGRATION_LOCAL from the CRM service",
+          "isOptional": false
+        },
+        "EVO_FLOW_ALLOW_INSECURE": {
+          "defaultValue": "${{CRM.EVO_FLOW_ALLOW_INSECURE}}",
+          "description": "EVO_FLOW_ALLOW_INSECURE from the CRM service",
+          "isOptional": false
+        },
+        "FRONTEND_URL": {
+          "defaultValue": "${{CRM.FRONTEND_URL}}",
+          "description": "FRONTEND_URL from the CRM service",
+          "isOptional": false
+        },
+        "BACKEND_URL": {
+          "defaultValue": "${{CRM.BACKEND_URL}}",
+          "description": "BACKEND_URL from the CRM service",
+          "isOptional": false
+        },
+        "CORS_ORIGINS": {
+          "defaultValue": "${{CRM.CORS_ORIGINS}}",
+          "description": "CORS_ORIGINS from the CRM service",
+          "isOptional": false
+        },
+        "DISABLE_TELEMETRY": {
+          "defaultValue": "${{CRM.DISABLE_TELEMETRY}}",
+          "description": "DISABLE_TELEMETRY from the CRM service",
+          "isOptional": false
+        },
+        "LOG_LEVEL": {
+          "defaultValue": "${{CRM.LOG_LEVEL}}",
+          "description": "LOG_LEVEL from the CRM service",
+          "isOptional": false
+        },
+        "ENABLE_ACCOUNT_SIGNUP": {
+          "defaultValue": "${{CRM.ENABLE_ACCOUNT_SIGNUP}}",
+          "description": "ENABLE_ACCOUNT_SIGNUP from the CRM service",
+          "isOptional": false
+        },
+        "ENABLE_PUSH_RELAY_SERVER": {
+          "defaultValue": "${{CRM.ENABLE_PUSH_RELAY_SERVER}}",
+          "description": "ENABLE_PUSH_RELAY_SERVER from the CRM service",
+          "isOptional": false
+        },
+        "ENABLE_INBOX_EVENTS": {
+          "defaultValue": "${{CRM.ENABLE_INBOX_EVENTS}}",
+          "description": "ENABLE_INBOX_EVENTS from the CRM service",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_URL": {
+          "defaultValue": "${{CRM.BOT_RUNTIME_URL}}",
+          "description": "BOT_RUNTIME_URL from the CRM service",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_SECRET": {
+          "defaultValue": "${{CRM.BOT_RUNTIME_SECRET}}",
+          "description": "BOT_RUNTIME_SECRET from the CRM service",
+          "isOptional": false
+        },
+        "EVOLUTION_API_URL": {
+          "defaultValue": "${{CRM.EVOLUTION_API_URL}}",
+          "description": "EVOLUTION_API_URL from the CRM service",
+          "isOptional": false
+        },
+        "EVOLUTION_ADMIN_SECRET": {
+          "defaultValue": "${{CRM.EVOLUTION_ADMIN_SECRET}}",
+          "description": "EVOLUTION_ADMIN_SECRET from the CRM service",
+          "isOptional": false
+        },
+        "ACTIVE_STORAGE_SERVICE": {
+          "defaultValue": "${{CRM.ACTIVE_STORAGE_SERVICE}}",
+          "description": "ACTIVE_STORAGE_SERVICE from the CRM service",
+          "isOptional": false
+        },
+        "STORAGE_BUCKET_NAME": {
+          "defaultValue": "${{CRM.STORAGE_BUCKET_NAME}}",
+          "description": "STORAGE_BUCKET_NAME from the CRM service",
+          "isOptional": false
+        },
+        "STORAGE_ACCESS_KEY_ID": {
+          "defaultValue": "${{CRM.STORAGE_ACCESS_KEY_ID}}",
+          "description": "STORAGE_ACCESS_KEY_ID from the CRM service",
+          "isOptional": false
+        },
+        "STORAGE_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{CRM.STORAGE_SECRET_ACCESS_KEY}}",
+          "description": "STORAGE_SECRET_ACCESS_KEY from the CRM service",
+          "isOptional": false
+        },
+        "STORAGE_REGION": {
+          "defaultValue": "${{CRM.STORAGE_REGION}}",
+          "description": "STORAGE_REGION from the CRM service",
+          "isOptional": false
+        },
+        "STORAGE_ENDPOINT": {
+          "defaultValue": "${{CRM.STORAGE_ENDPOINT}}",
+          "description": "STORAGE_ENDPOINT from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_ADDRESS": {
+          "defaultValue": "${{CRM.SMTP_ADDRESS}}",
+          "description": "SMTP_ADDRESS from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_PORT": {
+          "defaultValue": "${{CRM.SMTP_PORT}}",
+          "description": "SMTP_PORT from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_USERNAME": {
+          "defaultValue": "${{CRM.SMTP_USERNAME}}",
+          "description": "SMTP_USERNAME from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_PASSWORD": {
+          "defaultValue": "${{CRM.SMTP_PASSWORD}}",
+          "description": "SMTP_PASSWORD from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_DOMAIN": {
+          "defaultValue": "${{CRM.SMTP_DOMAIN}}",
+          "description": "SMTP_DOMAIN from the CRM service",
+          "isOptional": false
+        },
+        "MAILER_SENDER_EMAIL": {
+          "defaultValue": "${{CRM.MAILER_SENDER_EMAIL}}",
+          "description": "MAILER_SENDER_EMAIL from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_AUTHENTICATION": {
+          "defaultValue": "${{CRM.SMTP_AUTHENTICATION}}",
+          "description": "SMTP_AUTHENTICATION from the CRM service",
+          "isOptional": false
+        },
+        "SMTP_ENABLE_STARTTLS_AUTO": {
+          "defaultValue": "${{CRM.SMTP_ENABLE_STARTTLS_AUTO}}",
+          "description": "SMTP_ENABLE_STARTTLS_AUTO from the CRM service",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_POSTBACK_BASE_URL": {
+          "defaultValue": "http://${{CRM.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "Where the bot runtime posts replies back",
+          "isOptional": false
+        },
+        "RUN_MIGRATIONS": {
+          "defaultValue": "false",
+          "description": "The CRM service runs the migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "53fcbe71-828f-5050-8a99-87a306c4ea93": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Core",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-ai-core-service-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "PORT": {
+          "defaultValue": "5555",
+          "description": "Port Core listens on - leave as is",
+          "isOptional": false
+        },
+        "DB_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "DB_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "DB_USER": {
+          "defaultValue": "${{Postgres.POSTGRES_USER}}",
+          "description": "Postgres user",
+          "isOptional": false
+        },
+        "DB_PASSWORD": {
+          "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "DB_NAME": {
+          "defaultValue": "${{Postgres.POSTGRES_DB}}",
+          "description": "Shared Evo CRM database",
+          "isOptional": false
+        },
+        "DB_SSLMODE": {
+          "defaultValue": "disable",
+          "description": "Private network",
+          "isOptional": false
+        },
+        "DB_MAX_IDLE_CONNS": {
+          "defaultValue": "10",
+          "description": "Pool",
+          "isOptional": false
+        },
+        "DB_MAX_OPEN_CONNS": {
+          "defaultValue": "100",
+          "description": "Pool",
+          "isOptional": false
+        },
+        "DB_CONN_MAX_LIFETIME": {
+          "defaultValue": "1h",
+          "description": "Pool",
+          "isOptional": false
+        },
+        "DB_CONN_MAX_IDLE_TIME": {
+          "defaultValue": "30m",
+          "description": "Pool",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{Auth.SECRET_KEY_BASE}}",
+          "description": "SECRET_KEY_BASE from the Auth service",
+          "isOptional": false
+        },
+        "JWT_SECRET_KEY": {
+          "defaultValue": "${{Auth.JWT_SECRET_KEY}}",
+          "description": "JWT_SECRET_KEY from the Auth service",
+          "isOptional": false
+        },
+        "JWT_ALGORITHM": {
+          "defaultValue": "HS256",
+          "description": "JWT algorithm",
+          "isOptional": false
+        },
+        "ENCRYPTION_KEY": {
+          "defaultValue": "${{secret(42, \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_\")}}${{secret(1, \"AEIMQUYcgkosw048\")}}=",
+          "description": "Fernet key that encrypts AI provider keys and API keys. BACK IT UP - changing it makes stored credentials unreadable",
+          "isOptional": false
+        },
+        "EVOLUTION_BASE_URL": {
+          "defaultValue": "http://${{CRM.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "CRM on the private network",
+          "isOptional": false
+        },
+        "EVO_AUTH_BASE_URL": {
+          "defaultValue": "http://${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001",
+          "description": "Auth on the private network",
+          "isOptional": false
+        },
+        "AI_PROCESSOR_URL": {
+          "defaultValue": "http://${{Processor.RAILWAY_PRIVATE_DOMAIN}}:8000",
+          "description": "Processor on the private network",
+          "isOptional": false
+        },
+        "AI_PROCESSOR_VERSION": {
+          "defaultValue": "v1",
+          "description": "Processor API version",
+          "isOptional": false
+        }
+      }
+    },
+    "c91208c4-762c-5192-9866-75fff001dd1b": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Processor",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-ai-processor-community:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "PORT": {
+          "defaultValue": "8000",
+          "description": "Port the Processor listens on - leave as is",
+          "isOptional": false
+        },
+        "HOST": {
+          "defaultValue": "0.0.0.0",
+          "description": "Listen address",
+          "isOptional": false
+        },
+        "POSTGRES_CONNECTION_STRING": {
+          "defaultValue": "postgresql://${{Postgres.POSTGRES_USER}}:${{Postgres.POSTGRES_PASSWORD}}@${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{Postgres.POSTGRES_DB}}?sslmode=disable",
+          "description": "Shared Evo CRM database",
+          "isOptional": false
+        },
+        "REDIS_HOST": {
+          "defaultValue": "${{Redis.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "REDIS_PORT": {
+          "defaultValue": "6379",
+          "description": "Redis port",
+          "isOptional": false
+        },
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{Redis.REDIS_PASSWORD}}",
+          "description": "Redis password",
+          "isOptional": false
+        },
+        "REDIS_SSL": {
+          "defaultValue": "false",
+          "description": "Private network",
+          "isOptional": false
+        },
+        "REDIS_DB": {
+          "defaultValue": "1",
+          "description": "Redis database",
+          "isOptional": false
+        },
+        "REDIS_KEY_PREFIX": {
+          "defaultValue": "a2a_",
+          "description": "Key prefix",
+          "isOptional": false
+        },
+        "REDIS_TTL": {
+          "defaultValue": "3600",
+          "description": "Cache TTL",
+          "isOptional": false
+        },
+        "DEBUG": {
+          "defaultValue": "false",
+          "description": "Debug mode",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{Auth.SECRET_KEY_BASE}}",
+          "description": "SECRET_KEY_BASE from the Auth service",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{Auth.EVOAI_CRM_API_TOKEN}}",
+          "description": "EVOAI_CRM_API_TOKEN from the Auth service",
+          "isOptional": false
+        },
+        "ENCRYPTION_KEY": {
+          "defaultValue": "${{Core.ENCRYPTION_KEY}}",
+          "description": "Fernet key shared with Core",
+          "isOptional": false
+        },
+        "EVO_AUTH_BASE_URL": {
+          "defaultValue": "http://${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001",
+          "description": "Auth on the private network",
+          "isOptional": false
+        },
+        "EVO_AI_CRM_URL": {
+          "defaultValue": "http://${{CRM.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "CRM on the private network",
+          "isOptional": false
+        },
+        "CORE_SERVICE_URL": {
+          "defaultValue": "http://${{Core.RAILWAY_PRIVATE_DOMAIN}}:5555/api/v1",
+          "description": "Core on the private network",
+          "isOptional": false
+        },
+        "APP_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL",
+          "isOptional": false
+        },
+        "API_URL": {
+          "defaultValue": "https://${{Gateway.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public API URL",
+          "isOptional": false
+        },
+        "API_TITLE": {
+          "defaultValue": "Agent Processor Community",
+          "description": "OpenAPI title",
+          "isOptional": false
+        },
+        "API_DESCRIPTION": {
+          "defaultValue": "Agent Processor Community for Evo AI",
+          "description": "OpenAPI description",
+          "isOptional": false
+        },
+        "API_VERSION": {
+          "defaultValue": "1.0.0",
+          "description": "OpenAPI version",
+          "isOptional": false
+        },
+        "ORGANIZATION_NAME": {
+          "defaultValue": "Evo CRM",
+          "description": "OpenAPI org",
+          "isOptional": false
+        },
+        "TOOLS_CACHE_ENABLED": {
+          "defaultValue": "true",
+          "description": "Cache tool lists",
+          "isOptional": false
+        },
+        "TOOLS_CACHE_TTL": {
+          "defaultValue": "3600",
+          "description": "Tool cache TTL",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "600",
+          "description": "First boot runs database migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "3bf4776b-d89e-549d-858a-d293e9aa4236": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Bot-Runtime",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evo-bot-runtime:1.1.0"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "PORT": {
+          "defaultValue": "8080",
+          "description": "Port the bot runtime listens on - leave as is",
+          "isOptional": false
+        },
+        "LISTEN_ADDR": {
+          "defaultValue": "0.0.0.0:8080",
+          "description": "Listen address",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "AI_PROCESSOR_URL": {
+          "defaultValue": "http://${{Processor.RAILWAY_PRIVATE_DOMAIN}}:8000",
+          "description": "Processor on the private network",
+          "isOptional": false
+        },
+        "BOT_RUNTIME_SECRET": {
+          "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+          "description": "Shared secret between the CRM and the bot runtime",
+          "isOptional": false
+        },
+        "AI_CALL_TIMEOUT_SECONDS": {
+          "defaultValue": "90",
+          "description": "Per-turn AI timeout",
+          "isOptional": false
+        },
+        "MEDIA_HOST_ALLOWLIST": {
+          "defaultValue": "${{Gateway.RAILWAY_PUBLIC_DOMAIN}},t3.storageapi.dev",
+          "description": "Hosts the agent may fetch incoming media from (API domain + Railway bucket). Add your custom API domain here",
+          "isOptional": false
+        }
+      }
+    },
+    "9bfece77-bd7c-5d7b-a1d6-8962f21babc8": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "EvoFlow",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/evo-crm-railway",
+        "rootDirectory": "/evoflow"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "AUTH_APIKEY_INTEGRATION_LOCAL": {
+          "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+          "description": "Shared key between the CRM and EvoFlow",
+          "isOptional": false
+        },
+        "EVO_AUTH_SERVICE_URL": {
+          "defaultValue": "http://${{Auth.RAILWAY_PRIVATE_DOMAIN}}:3001",
+          "description": "Auth on the private network",
+          "isOptional": false
+        },
+        "EVO_AUTH_VALIDATE_TOKEN_ENDPOINT": {
+          "defaultValue": "/api/v1/auth/validate",
+          "description": "Token validation path",
+          "isOptional": false
+        },
+        "EVOAI_CRM_BASE_URL": {
+          "defaultValue": "http://${{CRM.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "CRM on the private network",
+          "isOptional": false
+        },
+        "EVOAI_CRM_API_TOKEN": {
+          "defaultValue": "${{Auth.EVOAI_CRM_API_TOKEN}}",
+          "description": "EVOAI_CRM_API_TOKEN from the Auth service",
+          "isOptional": false
+        },
+        "RABBITMQ_URL": {
+          "defaultValue": "amqp://evoflow:${{RabbitMQ.RABBITMQ_DEFAULT_PASS}}@${{RabbitMQ.RAILWAY_PRIVATE_DOMAIN}}:5672",
+          "description": "RabbitMQ on the private network",
+          "isOptional": false
+        },
+        "CLICKHOUSE_HOST": {
+          "defaultValue": "${{ClickHouse.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "ClickHouse on the private network",
+          "isOptional": false
+        },
+        "CLICKHOUSE_PORT": {
+          "defaultValue": "8123",
+          "description": "ClickHouse HTTP port",
+          "isOptional": false
+        },
+        "CLICKHOUSE_DATABASE": {
+          "defaultValue": "evo_campaign",
+          "description": "ClickHouse database (created by EvoFlow)",
+          "isOptional": false
+        },
+        "CLICKHOUSE_USERNAME": {
+          "defaultValue": "default",
+          "description": "ClickHouse user",
+          "isOptional": false
+        },
+        "CLICKHOUSE_PASSWORD": {
+          "defaultValue": "${{ClickHouse.CLICKHOUSE_PASSWORD}}",
+          "description": "ClickHouse password",
+          "isOptional": false
+        },
+        "CLICKHOUSE_TABLE": {
+          "defaultValue": "contact_events",
+          "description": "Event table",
+          "isOptional": false
+        },
+        "REDIS_HOST": {
+          "defaultValue": "${{Redis.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Redis on the private network",
+          "isOptional": false
+        },
+        "REDIS_PORT": {
+          "defaultValue": "6379",
+          "description": "Redis port",
+          "isOptional": false
+        },
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{Redis.REDIS_PASSWORD}}",
+          "description": "Redis password",
+          "isOptional": false
+        },
+        "REDIS_DB": {
+          "defaultValue": "4",
+          "description": "Redis database",
+          "isOptional": false
+        },
+        "POSTGRES_DB_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "POSTGRES_DB_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "POSTGRES_DB_USERNAME": {
+          "defaultValue": "${{Postgres.POSTGRES_USER}}",
+          "description": "Postgres user",
+          "isOptional": false
+        },
+        "POSTGRES_DB_PASSWORD": {
+          "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "POSTGRES_DB_DATABASE": {
+          "defaultValue": "evo_campaign",
+          "description": "EvoFlow's own database (created on first boot)",
+          "isOptional": false
+        },
+        "PORT": {
+          "defaultValue": "3334",
+          "description": "Port EvoFlow listens on - leave as is",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "600",
+          "description": "First boot runs database migrations",
+          "isOptional": false
+        }
+      }
+    },
+    "dd5cdb37-f402-50af-83bd-11c889633dfe": {
+      "icon": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+      "name": "Evolution-API",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "evoapicloud/evolution-api:v2.3.7"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "72d16b21-ca47-50b0-93cf-d2737cf57486": {
+          "mountPath": "/evolution/instances"
+        }
+      },
+      "variables": {
+        "SERVER_TYPE": {
+          "defaultValue": "http",
+          "description": "Plain http behind Railway",
+          "isOptional": false
+        },
+        "SERVER_PORT": {
+          "defaultValue": "8080",
+          "description": "Port Evolution API listens on - leave as is",
+          "isOptional": false
+        },
+        "PORT": {
+          "defaultValue": "8080",
+          "description": "Same as SERVER_PORT",
+          "isOptional": false
+        },
+        "SERVER_URL": {
+          "defaultValue": "http://${{RAILWAY_PRIVATE_DOMAIN}}:8080",
+          "description": "Base URL Evolution reports (private - only the CRM talks to it)",
+          "isOptional": false
+        },
+        "AUTHENTICATION_API_KEY": {
+          "defaultValue": "${{secret(48, \"0123456789abcdef\")}}",
+          "description": "Evolution API global key (the CRM reads it)",
+          "isOptional": false
+        },
+        "DATABASE_ENABLED": {
+          "defaultValue": "true",
+          "description": "Persist in Postgres",
+          "isOptional": false
+        },
+        "DATABASE_PROVIDER": {
+          "defaultValue": "postgresql",
+          "description": "Database",
+          "isOptional": false
+        },
+        "DATABASE_CONNECTION_URI": {
+          "defaultValue": "postgresql://${{Postgres.POSTGRES_USER}}:${{Postgres.POSTGRES_PASSWORD}}@${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/evolution?schema=public",
+          "description": "Evolution's own database (created on first Postgres boot)",
+          "isOptional": false
+        },
+        "DATABASE_CONNECTION_CLIENT_NAME": {
+          "defaultValue": "evolution",
+          "description": "Client name",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_INSTANCE": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_NEW_MESSAGE": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_MESSAGE_UPDATE": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_CONTACTS": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_CHATS": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_LABELS": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "DATABASE_SAVE_DATA_HISTORIC": {
+          "defaultValue": "true",
+          "description": "Persist",
+          "isOptional": false
+        },
+        "CACHE_REDIS_ENABLED": {
+          "defaultValue": "true",
+          "description": "Redis cache",
+          "isOptional": false
+        },
+        "CACHE_REDIS_URI": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/6?family=0",
+          "description": "Redis (family=0 lets ioredis use IPv6)",
+          "isOptional": false
+        },
+        "CACHE_REDIS_PREFIX_KEY": {
+          "defaultValue": "evolution",
+          "description": "Key prefix",
+          "isOptional": false
+        },
+        "CACHE_REDIS_SAVE_INSTANCES": {
+          "defaultValue": "false",
+          "description": "Sessions stay on the volume",
+          "isOptional": false
+        },
+        "CACHE_LOCAL_ENABLED": {
+          "defaultValue": "false",
+          "description": "Local cache off",
+          "isOptional": false
+        },
+        "DEL_INSTANCE": {
+          "defaultValue": "false",
+          "description": "Keep disconnected instances",
+          "isOptional": false
+        },
+        "S3_ENABLED": {
+          "defaultValue": "false",
+          "description": "Evolution's S3 client can't use bucket-scoped credentials; media stays in Postgres",
+          "isOptional": false
+        },
+        "LANGUAGE": {
+          "defaultValue": "en",
+          "description": "Language",
+          "isOptional": false
+        }
+      }
+    },
+    "79dea11f-a939-559c-8773-a641653600d6": {
+      "icon": "https://devicons.railway.app/i/postgresql.svg",
+      "name": "Postgres",
+      "build": {},
+      "deploy": {
+        "startCommand": "/bin/sh -c \"echo 'CREATE DATABASE evolution;' > /docker-entrypoint-initdb.d/10-evolution.sql && exec docker-entrypoint.sh postgres\"",
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "pgvector/pgvector:0.8.7-pg16"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "260571ee-5148-505a-9e1e-661172c809c5": {
+          "mountPath": "/var/lib/postgresql/data"
+        }
+      },
+      "variables": {
+        "POSTGRES_USER": {
+          "defaultValue": "postgres",
+          "description": "Superuser",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{secret(32, \"0123456789abcdef\")}}",
+          "description": "Postgres password",
+          "isOptional": false
+        },
+        "POSTGRES_DB": {
+          "defaultValue": "evo_community",
+          "description": "Evo CRM database",
+          "isOptional": false
+        },
+        "PGDATA": {
+          "defaultValue": "/var/lib/postgresql/data/pgdata",
+          "description": "One level below the volume root (lost+found)",
+          "isOptional": false
+        }
+      }
+    },
+    "9d7a589a-7e5e-558d-a90e-67175fdc672d": {
+      "icon": "https://devicons.railway.app/i/redis.svg",
+      "name": "Redis",
+      "build": {},
+      "deploy": {
+        "startCommand": "/bin/sh -c \"chown -R redis:redis /data && exec docker-entrypoint.sh redis-server --requirepass $REDIS_PASSWORD --appendonly yes --maxmemory-policy noeviction\"",
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "redis:7.4.11-alpine"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "6b65542e-2bd4-5efc-961a-850f6ca40fe3": {
+          "mountPath": "/data"
+        }
+      },
+      "variables": {
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{secret(32, \"0123456789abcdef\")}}",
+          "description": "Redis password",
+          "isOptional": false
+        }
+      }
+    },
+    "03e3eef1-44a0-5fd3-addf-ce89a02bc0aa": {
+      "icon": null,
+      "name": "ClickHouse",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/evo-crm-railway",
+        "rootDirectory": "/clickhouse"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "d256d5ed-d6ae-54a7-985f-01a18c795b00": {
+          "mountPath": "/var/lib/clickhouse"
+        }
+      },
+      "variables": {
+        "CLICKHOUSE_PASSWORD": {
+          "defaultValue": "${{secret(32, \"0123456789abcdef\")}}",
+          "description": "ClickHouse password for EvoFlow",
+          "isOptional": false
+        }
+      }
+    },
+    "6da560ae-9e54-5d00-8817-c14d2b3f970d": {
+      "icon": null,
+      "name": "RabbitMQ",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "rabbitmq:4.1.8-alpine"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {},
+      "variables": {
+        "RABBITMQ_DEFAULT_USER": {
+          "defaultValue": "evoflow",
+          "description": "RabbitMQ user",
+          "isOptional": false
+        },
+        "RABBITMQ_DEFAULT_PASS": {
+          "defaultValue": "${{secret(32, \"0123456789abcdef\")}}",
+          "description": "RabbitMQ password",
+          "isOptional": false
+        }
+      }
+    }
+  }
+}
