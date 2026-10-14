@@ -40,6 +40,9 @@ pg = {
     "POSTGRES_PASSWORD": v("${{Postgres.POSTGRES_PASSWORD}}", "Postgres password"),
     "POSTGRES_DATABASE": v("${{Postgres.POSTGRES_DB}}", "Shared Evo CRM database"),
     "POSTGRES_SSLMODE": v("disable", "Plain connection - traffic stays on Railway's private network"),
+    # Without it a reconnect after a Postgres redeploy can hang past rack-timeout (15 s),
+    # which leaks the pooled connection; a few of those wedge the Rails service for good.
+    "PGCONNECT_TIMEOUT": v("5", "libpq connect timeout in seconds, so Rails recovers quickly after a Postgres redeploy"),
 }
 redis_url = lambda db: f"redis://default:${{{{Redis.REDIS_PASSWORD}}}}@${{{{Redis.RAILWAY_PRIVATE_DOMAIN}}}}:6379/{db}"
 storage = {

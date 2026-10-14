@@ -243,6 +243,11 @@
           "description": "Plain connection - traffic stays on Railway's private network",
           "isOptional": false
         },
+        "PGCONNECT_TIMEOUT": {
+          "defaultValue": "5",
+          "description": "libpq connect timeout in seconds, so Rails recovers quickly after a Postgres redeploy",
+          "isOptional": false
+        },
         "FRONTEND_URL": {
           "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}",
           "description": "Public URL of the Evo CRM app (the Frontend service)",
@@ -438,6 +443,11 @@
           "description": "Plain connection - traffic stays on Railway's private network",
           "isOptional": false
         },
+        "PGCONNECT_TIMEOUT": {
+          "defaultValue": "5",
+          "description": "libpq connect timeout in seconds, so Rails recovers quickly after a Postgres redeploy",
+          "isOptional": false
+        },
         "FRONTEND_URL": {
           "defaultValue": "https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}",
           "description": "Public URL of the Evo CRM app (the Frontend service)",
@@ -616,6 +626,11 @@
         "POSTGRES_SSLMODE": {
           "defaultValue": "disable",
           "description": "Plain connection - traffic stays on Railway's private network",
+          "isOptional": false
+        },
+        "PGCONNECT_TIMEOUT": {
+          "defaultValue": "5",
+          "description": "libpq connect timeout in seconds, so Rails recovers quickly after a Postgres redeploy",
           "isOptional": false
         },
         "REDIS_URL": {
@@ -876,6 +891,11 @@
         "POSTGRES_SSLMODE": {
           "defaultValue": "${{CRM.POSTGRES_SSLMODE}}",
           "description": "POSTGRES_SSLMODE from the CRM service",
+          "isOptional": false
+        },
+        "PGCONNECT_TIMEOUT": {
+          "defaultValue": "${{CRM.PGCONNECT_TIMEOUT}}",
+          "description": "PGCONNECT_TIMEOUT from the CRM service",
           "isOptional": false
         },
         "REDIS_URL": {

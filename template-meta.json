@@ -1,0 +1,9 @@
+{
+  "name": "Evo CRM | Open-Source AI Customer Service with WhatsApp",
+  "short_name": "Evo CRM",
+  "description": "AI agents, WhatsApp and omnichannel inbox on your own Postgres",
+  "category": "Bots",
+  "image": "https://raw.githubusercontent.com/nomideusz/evo-crm-railway/main/icon.svg",
+  "card_desc": "Evo CRM Community from the Evolution API team: an omnichannel support inbox with AI agents, WhatsApp through a bundled Evolution API, contacts, pipelines, segments and campaigns. Unmodified official images, 15 services, uploads in a Railway bucket.",
+  "id": "a9781fea-52da-4015-84ec-0322073c649e"
+}
