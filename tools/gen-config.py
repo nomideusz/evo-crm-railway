@@ -264,7 +264,7 @@ services = dict([
         "PGDATA": v("/var/lib/postgresql/data/pgdata", "One level below the volume root (lost+found)"),
     }, start="/bin/sh -c \"echo 'CREATE DATABASE evolution;' > /docker-entrypoint-initdb.d/10-evolution.sql && exec docker-entrypoint.sh postgres\"",
         volume="/var/lib/postgresql/data", icon="https://devicons.railway.app/i/postgresql.svg"),
-    svc("Redis", img("redis:7.4.11-alpine"), {
+    svc("Redis", img("redis:7.4.12-alpine"), {
         "REDIS_PASSWORD": v("${{secret(32, %s)}}" % HEX, "Redis password"),
     }, start='/bin/sh -c "chown -R redis:redis /data && exec docker-entrypoint.sh redis-server --requirepass $REDIS_PASSWORD --appendonly yes --maxmemory-policy noeviction"',
         volume="/data", icon="https://devicons.railway.app/i/redis.svg"),

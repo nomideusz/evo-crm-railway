@@ -1730,7 +1730,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "image": "redis:7.4.11-alpine"
+        "image": "redis:7.4.12-alpine"
       },
       "networking": {
         "serviceDomains": {}
