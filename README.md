@@ -18,7 +18,7 @@ Evo CRM is a set of microservices behind an nginx gateway. This template runs fi
 - **Processor**: runs the AI agents (Python, Google ADK + LiteLLM).
 - **Bot-Runtime**: the bot pipeline between the inbox and the agents (Go).
 - **EvoFlow**: segments, journeys and campaigns (NestJS), with **ClickHouse** for contact events and **RabbitMQ** as its broker.
-- **Evolution-API**: the official `evoapicloud/evolution-api:v2.3.7` image, pre-wired so a new WhatsApp channel connects to it without any URL or key to copy.
+- **Evolution-API**: the official `evoapicloud/evolution-api:v2.3.8` image, pre-wired so a new WhatsApp channel connects to it without any URL or key to copy.
 - **Postgres 16 with pgvector** and **Redis 7**, each with its own volume.
 - **A Railway bucket** for attachments, avatars and chat media.
 

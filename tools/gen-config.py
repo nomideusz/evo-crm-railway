@@ -255,7 +255,7 @@ services = dict([
     svc("Processor", img("evoapicloud/evo-ai-processor-community:1.1.0"), processor, health="/health"),
     svc("Bot-Runtime", img("evoapicloud/evo-bot-runtime:1.1.0"), bot, health="/health"),
     svc("EvoFlow", repo("/evoflow"), evoflow, health="/health"),
-    svc("Evolution-API", img("evoapicloud/evolution-api:v2.3.7"), evolution, health="/",
+    svc("Evolution-API", img("evoapicloud/evolution-api:v2.3.8"), evolution, health="/",
         volume="/evolution/instances"),
     svc("Postgres", img("pgvector/pgvector:0.8.7-pg16"), {
         "POSTGRES_USER": v("postgres", "Superuser"),

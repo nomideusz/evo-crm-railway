@@ -1542,7 +1542,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "image": "evoapicloud/evolution-api:v2.3.7"
+        "image": "evoapicloud/evolution-api:v2.3.8"
       },
       "networking": {
         "serviceDomains": {}
