@@ -271,7 +271,7 @@ services = dict([
     svc("ClickHouse", repo("/clickhouse"), {
         "CLICKHOUSE_PASSWORD": v("${{secret(32, %s)}}" % HEX, "ClickHouse password for EvoFlow"),
     }, volume="/var/lib/clickhouse"),
-    svc("RabbitMQ", img("rabbitmq:4.1.8-alpine"), {
+    svc("RabbitMQ", img("rabbitmq:4.4.1-alpine"), {
         "RABBITMQ_DEFAULT_USER": v("evoflow", "RabbitMQ user"),
         "RABBITMQ_DEFAULT_PASS": v("${{secret(32, %s)}}" % HEX, "RabbitMQ password"),
     }),

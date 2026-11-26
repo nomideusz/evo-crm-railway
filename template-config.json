@@ -1789,7 +1789,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "image": "rabbitmq:4.1.8-alpine"
+        "image": "rabbitmq:4.4.1-alpine"
       },
       "networking": {
         "serviceDomains": {}

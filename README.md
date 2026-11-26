@@ -17,7 +17,7 @@ Evo CRM is a set of microservices behind an nginx gateway. This template runs fi
 - **Core**: AI agents, folders, API keys and MCP servers (Go).
 - **Processor**: runs the AI agents (Python, Google ADK + LiteLLM).
 - **Bot-Runtime**: the bot pipeline between the inbox and the agents (Go).
-- **EvoFlow**: segments, journeys and campaigns (NestJS), with **ClickHouse** for contact events and **RabbitMQ** as its broker.
+- **EvoFlow**: segments, journeys and campaigns (NestJS), with **ClickHouse** for contact events and **RabbitMQ 4.4** as its broker.
 - **Evolution-API**: the official `evoapicloud/evolution-api:v2.3.8` image, pre-wired so a new WhatsApp channel connects to it without any URL or key to copy.
 - **Postgres 16 with pgvector** and **Redis 7**, each with its own volume.
 - **A Railway bucket** for attachments, avatars and chat media.
@@ -56,6 +56,8 @@ Migrations run on boot: Auth first, then the CRM waits for Auth's health check b
 **Email (optional).** Without SMTP, everything works except emails (password resets, invitations by email). To send email, fill in the optional `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_DOMAIN` and `MAILER_SENDER_EMAIL` variables on the Auth service; Auth-Worker, CRM and CRM-Worker read them from there. Railway only allows outbound SMTP on the Pro plan.
 
 **Custom domains.** The Frontend and Gateway each have a domain. If you add your own, update the variables built from them and redeploy: `FRONTEND_URL`, `BACKEND_URL` and `CORS_ORIGINS` on Auth and CRM, the `VITE_*` variables on Frontend, `APP_URL` and `API_URL` on Processor, and `MEDIA_HOST_ALLOWLIST` on Bot-Runtime.
+
+**Upgrading RabbitMQ on an existing deploy.** New deploys get RabbitMQ 4.4.1. If yours was deployed earlier, it is on 4.1.8, which gets no more patches. RabbitMQ is image-sourced, so Railway shows no update notice for it: open the RabbitMQ service, Settings → Source, set the image to `rabbitmq:4.4.1-alpine` and deploy. The broker here has no volume, so it starts as a new empty node and the jump from 4.1 is safe: EvoFlow reconnects within a few seconds and declares what it needs again. Nothing else needs restarting. Only if you added a volume to RabbitMQ yourself: go through `rabbitmq:4.2.9-alpine` first, run `rabbitmqctl enable_feature_flag all` on it, then move to 4.4.1. RabbitMQ only supports an upgrade of existing data from 4.1 by way of 4.2.
 
 **Back up these values.** `ENCRYPTION_KEY` on Core encrypts the AI provider keys and `SECRET_KEY_BASE` on Auth signs sessions. Losing the first means re-entering every AI credential; changing the second logs everyone out.
 
